@@ -1,0 +1,335 @@
+<html>
+  <head>
+    <style>
+      body {
+        margin: 0;
+      }
+      .centerY {
+        top: 50%;
+        transform: translateY(-50%);
+      }
+      .centerX {
+        left: 50%;
+        transform: translateX(-50%)
+      }
+      .center {
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);        
+      }
+      
+      .background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        transition: filter 0.75s;
+      }
+      #curtain {
+        background-color: black;
+        opacity: 0.3;
+      }
+      #wallpaper2 {
+        transition: opacity 0.5s;
+      }
+      .container {
+        display: none;
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+      }
+      #document {
+        z-index: 1;
+      }
+
+      .btn {
+        position: absolute;
+        cursor: pointer;
+        z-index: 1;        
+      }
+      .arrow img {
+        width: 40px;
+        filter: invert(100%) drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+        transition: filter 0.75s;
+      }
+      .control img {
+        filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5));
+        transition: transform 0.25s, filter 0.25s;
+      }
+      .control:hover img {
+        filter: drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.3));
+        transform: scale(1.2);
+      }
+      #btn-left {
+        display: none;
+        left: 35;
+      }
+      #btn-right {
+        right: 35;
+      }
+      #btn-up {
+        display: none;
+        top: 15;
+      }
+      #btn-down {
+        bottom: 15;
+      }
+      #btn-switch {
+        display: none;
+        left: 75;
+        bottom: 75;
+      }
+      #btn-switch img {
+        width: 75px;
+      }
+      #btn-close {
+        display: none;
+        left: 75;
+        top: 75;
+      }
+      #btn-close img {        
+        width: 45px;
+      }
+
+      .section {
+        display: none;
+      }
+      .char-card {
+        width: 900px;
+      }
+      .char-info {
+        height: 550px;
+      }
+
+      .block {
+        width: 130px;
+        height: 189px;
+        margin: 20px;
+        display: inline-block;
+        vertical-align: middle;
+        box-shadow: 2px 2px 10px 0px rgba(0,0,0,0.4);
+        transition: transform 0.25s, box-shadow 0.5s;
+        z-index: 1;
+      }
+      .block:hover {
+        transform: scale(1.1);
+        box-shadow: 1px 1px 5px 0px rgba(0,0,0,0.4);
+      }
+      .content img {
+        height: 100%;
+        width: 100%;
+      }
+
+      #document {
+        height: 90%;
+        cursor: pointer;
+      }
+      #document img {
+        max-height: 100%;
+        transition: transform 0.25s;
+        backface-visibility: hidden;
+        filter: drop-shadow(1px 3px 3px rgba(0, 0, 0, 0.5));
+      }
+      #document:hover img {
+        transform: scale(1.005);
+      }
+      .cha-dark {
+        display: none;
+      }
+    </style>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script>
+      $(() => {
+        $(document).keydown((press) => {
+          if(press.which == 37)
+            $('#btn-left').click();
+          else if(press.which == 39)
+            $('#btn-right').click();
+          else if(press.which == 38)
+            $('#btn-up').click();
+          else if(press.which == 40)
+            $('#btn-down').click();
+        });
+
+        $('.arrow').click((clicked) => {
+          clicked = clicked.currentTarget;
+
+          let toShow;
+          if(clicked.id == 'btn-right' || clicked.id == 'btn-left')
+            $('.section').each((i, el) => {
+              if($(el).is(":visible")) {
+                if(clicked.id == 'btn-right')
+                  toShow = $(el).next('.section')[0];
+                else if(clicked.id == 'btn-left')
+                  toShow = $(el).prev('.section')[0];
+                
+                if(toShow) $(el).hide();
+              }
+            });
+          else if(clicked.id == 'btn-up' || clicked.id == 'btn-down')
+            $('.container:not(.hidden)').each((i, el) => {
+              if($(el).is(":visible")) {
+                if(clicked.id == 'btn-down')
+                  toShow = $(el).next('.container:not(.hidden)')[0];
+                else if(clicked.id == 'btn-up')
+                  toShow = $(el).prev('.container:not(.hidden)')[0];
+                
+                if(toShow) $(el).hide();
+              }
+            });
+
+          if(toShow) {
+            $(toShow).fadeIn();
+
+            if(toShow.classList.contains('section')) {
+              if($(toShow).attr('id') == 'theo-card')
+                $('#wallpaper').css('filter', 'sepia(75%) contrast(90%)');
+              if($(toShow).attr('id') == 'sol-info')
+                $('#wallpaper').css('filter', 'none');
+
+
+              if(!$('#btn-left').is(':visible'))
+                $('#btn-left').fadeIn();
+              else if(!$('#btn-right').is(':visible'))
+                $('#btn-right').fadeIn();
+
+              if(clicked.id == 'btn-right') {
+                if(!$(toShow).next('.section')[0])
+                  $('#btn-right').fadeOut();
+              } else {              
+                if(!$(toShow).prev('.section')[0])
+                  $('#btn-left').fadeOut();
+              }
+            }
+            else if(toShow.classList.contains('container')) {
+              if($(toShow).is('.container:not(.hidden):first')) {
+                $('#wallpaper2').css('opacity', '0');
+                $('.arrow img').css('filter', 'invert(100%) drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5))');
+              } else {
+                $('#wallpaper2').css('opacity', '1');
+                $('.arrow img').css('filter', 'invert(50%) drop-shadow(1px 1px 1px rgba(0, 0, 0, 0.5))');
+              }
+
+
+              if(clicked.id == 'btn-up') {
+                $('#btn-down').fadeIn();
+                if($(toShow).is('.container:not(.hidden):first'))
+                  $('#btn-up').fadeOut();
+                
+                if(!$('.section:visible').is(':first-child')) {
+                  $('.section:visible').hide();
+                  $('.section:first-child').show(); }
+                  
+                $('#btn-left').hide();
+                $('#btn-right').fadeIn();
+              } else if(clicked.id == 'btn-down') {
+                $('#btn-up').fadeIn();
+                if($(toShow).is('.container:not(.hidden):last'))
+                  $('#btn-down').fadeOut();
+                
+                $('#btn-right, #btn-left').fadeOut();
+              }
+            }
+          }
+        });
+
+        let fadeInTimeout, fadeOutTimeout;
+        $('.block').hover(() => {
+          clearTimeout(fadeOutTimeout);
+          fadeInTimeout = setTimeout(() => {
+            $('.arrow').css('z-index', '0');
+            $('#curtain').fadeIn();
+          }, 100)
+        }, () => {
+          clearTimeout(fadeInTimeout);
+          fadeOutTimeout = setTimeout(() => {
+            if(!$('#document').is(':visible')) {
+              $('.arrow').css('z-index', '1');
+              $('#curtain').fadeOut(); }
+          }, 150)
+        });
+
+        $('.block').click((clicked) => {
+          clicked = clicked.currentTarget;
+
+          const imgs = $(clicked).children('.content').html();
+          $('#document').html(imgs);
+          $('#document').fadeIn();
+
+          $('.arrow, .block').css('z-index', '0');
+          $('#curtain').css('z-index', '1');          
+          $('.control').fadeIn();
+        });
+
+        $('#curtain, #btn-close').click(() => {
+          $('#document').fadeOut();
+
+          $('.arrow, .block').css('z-index', '1');
+          $('.control, #curtain').fadeOut(300, () => {
+            $('#curtain').css('z-index', '0');
+          });
+        });
+
+        $('#btn-switch').click(() => {
+          const toShow = $($('#document img:hidden'));
+          $('#document img:visible').hide();
+          $(toShow).fadeIn(150);
+        });
+
+        $('#document').click((clicked) => {
+          clicked = clicked.currentTarget;
+          window.open($(clicked).children('img:visible').attr('src'));
+        });
+      });
+    </script>
+    <title>Solverso ⛅</title>
+    <link rel="icon" type="image/png" href="./img/favicon.png"/>
+  </head>
+  <body>
+    <img class="background" id="wallpaper" src="./img/texture.png">
+    <img class="background" id="wallpaper2" style="opacity: 0; background-color: #f9f7f7">
+
+    <div class="btn arrow centerY" id="btn-left"><img src="./img/arrow.png" style="transform: rotate(90deg);"></div>
+    <div class="btn arrow centerY" id="btn-right"><img src="./img/arrow.png" style="transform: rotate(-90deg) scaleX(-1);"></div>
+    <div class="btn arrow centerX" id="btn-up"><img src="./img/arrow.png" style="transform: scaleY(-1);"></div>
+    <div class="btn arrow centerX" id="btn-down"><img src="./img/arrow.png"></div>
+
+
+    <div class="background" id="curtain" style="display: none"></div>
+
+    <div class="btn control" id="btn-close"><img src="./img/close.png"></div>
+    <div class="btn control" id="btn-switch"><img src="./img/switch.png"></div>
+
+
+    <div class="container" style="display: block;">
+      <div class="section" id="sol-card" style="display: block;">
+        <img src="./img/doc/sol.png" class="char-card">
+      </div>
+      <div class="section" id="sol-info">
+        <img src="./img/doc/sol-info.png" class="char-info">
+      </div>
+
+      <div class="section" id="theo-card">
+        <img src="./img/doc/theo.png" class="char-card">
+      </div>
+      <div class="section" id="theo-info">
+        <img src="./img/doc/theo-info.png" class="char-info">
+      </div>
+    </div>
+
+
+    <div class="container">
+      <div class="block">
+        <div class="content">
+          <img src="./img/cha/cha1-light.png" class="cha-light">
+          <img src="./img/cha/cha1-dark.png" class="cha-dark">
+        </div>
+      </div>
+    </div>
+
+    <div class="container hidden" id="document">
+    </div>
+  </body>
+</html>
